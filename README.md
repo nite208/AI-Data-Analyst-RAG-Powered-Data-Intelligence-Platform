@@ -7,5 +7,7 @@ A clean and minimal full-stack project foundation.
 * **Backend**: FastAPI
 * **Authentication**: Supabase Auth
 
-## Getting Started
-(Add instructions here)
+## Features
+* **Auth System**: Fully modular login/registration via Supabase
+* **Dataset Management**: Upload external `.csv` datasets forming the pipeline base
+* **Dashboard Layout**: Responsive sidebar routing mapping multiple views
