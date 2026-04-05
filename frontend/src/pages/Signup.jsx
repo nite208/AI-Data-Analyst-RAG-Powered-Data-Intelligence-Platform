@@ -70,6 +70,7 @@ export default function Signup() {
             <input 
               type="email" 
               required
+              autoComplete="email"
               className="w-full bg-slate-900/50 border border-slate-700 hover:border-slate-600 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-slate-100 placeholder-slate-500"
               placeholder="you@example.com"
               value={email}
@@ -81,6 +82,7 @@ export default function Signup() {
             <input 
               type="password" 
               required
+              autoComplete="new-password"
               className="w-full bg-slate-900/50 border border-slate-700 hover:border-slate-600 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-slate-100 placeholder-slate-500"
               placeholder="••••••••"
               value={password}

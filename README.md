@@ -10,4 +10,5 @@ A clean and minimal full-stack project foundation.
 ## Features
 * **Auth System**: Fully modular login/registration via Supabase
 * **Dataset Management**: Upload external `.csv` datasets forming the pipeline base
+* **RAG Pipeline**: Fully functional retrieval-augmented generation engine natively built on FAISS and HuggingFace models for CSV records querying!
 * **Dashboard Layout**: Responsive sidebar routing mapping multiple views

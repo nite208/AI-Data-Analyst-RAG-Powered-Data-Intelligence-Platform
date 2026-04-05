@@ -23,3 +23,13 @@ export async function getDatasets() {
   }
   return res.json();
 }
+
+export async function queryDataset(query) {
+  const res = await fetch(`${API_URL}/query`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ query }),
+  });
+  if (!res.ok) throw new Error('Query failed');
+  return res.json();
+}
