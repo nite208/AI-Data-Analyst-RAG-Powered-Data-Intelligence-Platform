@@ -3,6 +3,7 @@ import faiss
 import numpy as np
 from sentence_transformers import SentenceTransformer
 import warnings
+from advisor_service import generate_recommendations
 
 warnings.filterwarnings('ignore')
 
@@ -86,8 +87,11 @@ def generate_insights(raw_records: list):
     
     summary = f"I analyzed {len(raw_records)} relevant records based on your question. Here are the key patterns found."
 
+    recommendations = generate_recommendations(parsed_records)
+
     return {
         "summary": summary,
         "insights": insights,
+        "recommendations": recommendations,
         "raw_data": parsed_records
     }

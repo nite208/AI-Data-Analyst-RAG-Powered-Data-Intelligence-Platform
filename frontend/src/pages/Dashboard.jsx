@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Search, ArrowRight, Bot, User as UserIcon, Lightbulb } from 'lucide-react';
+import { Search, ArrowRight, Bot, User as UserIcon, Lightbulb, AlertCircle, CheckCircle, TrendingUp } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { queryDataset } from '../services/api';
 import AutoChart from '../components/AutoChart';
@@ -26,6 +26,7 @@ export default function Dashboard() {
         role: 'bot',
         content: response.summary || "I couldn't find any relevant patterns.",
         insights: response.insights || [],
+        recommendations: response.recommendations || [],
         rawData: response.raw_data || []
       };
 
@@ -75,17 +76,40 @@ export default function Dashboard() {
                   </div>
                   
                   {/* AI Extra Rendering Blocks */}
-                  {msg.role === 'bot' && msg.insights && msg.insights.length > 0 && (
-                    <div className="px-5 pb-5 w-full flex flex-col gap-4 border-t border-slate-700/30 pt-4 mt-2">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 w-full">
-                        {msg.insights.map((insight, idy) => (
-                          <div key={idy} className="flex gap-2 items-start bg-slate-900/40 p-3 rounded-lg border border-slate-700/40">
-                             <Lightbulb size={16} className="text-amber-400 mt-0.5 shrink-0" />
-                             <span className="text-xs text-slate-300">{insight}</span>
-                          </div>
-                        ))}
-                      </div>
+                  {msg.role === 'bot' && (
+                    <div className="px-5 pb-5 w-full flex flex-col gap-5 border-t border-slate-700/30 pt-4 mt-2">
                       
+                      {msg.insights && msg.insights.length > 0 && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 w-full">
+                          {msg.insights.map((insight, idy) => (
+                            <div key={idy} className="flex gap-2 items-start bg-slate-900/40 p-3 rounded-lg border border-slate-700/40">
+                               <Lightbulb size={16} className="text-amber-400 mt-0.5 shrink-0" />
+                               <span className="text-xs text-slate-300">{insight}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      
+                      {msg.recommendations && msg.recommendations.length > 0 && (
+                        <div className="bg-gradient-to-r from-indigo-900/30 to-blue-900/20 rounded-xl p-4 border border-indigo-500/20 shadow-inner">
+                          <h4 className="text-indigo-300 text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-2">
+                             <TrendingUp size={14} /> AI Advisor Recommendations
+                          </h4>
+                          <div className="space-y-2">
+                            {msg.recommendations.map((rec, idy) => (
+                              <div key={idy} className="flex gap-2 items-start text-sm text-slate-200">
+                                {rec.includes('⚠️') ? (
+                                  <AlertCircle size={15} className="text-rose-400 mt-0.5 shrink-0" />
+                                ) : (
+                                  <CheckCircle size={15} className="text-emerald-400 mt-0.5 shrink-0" />
+                                )}
+                                <span>{rec.replace('⚠️ ', '')}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
                       {msg.rawData && msg.rawData.length > 0 && (
                          <AutoChart data={msg.rawData} />
                       )}
