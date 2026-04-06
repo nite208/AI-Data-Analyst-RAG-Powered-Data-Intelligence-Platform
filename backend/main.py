@@ -3,7 +3,7 @@ import time
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from rag_service import process_and_index_csv, search_faiss
+from rag_service import process_and_index_csv, search_faiss, generate_insights
 
 app = FastAPI(title="DataSage AI API")
 
@@ -58,4 +58,5 @@ def list_datasets():
 @app.post("/query")
 def query_rag(request: QueryRequest):
     results = search_faiss(request.query)
-    return {"results": results}
+    insights = generate_insights(results)
+    return insights

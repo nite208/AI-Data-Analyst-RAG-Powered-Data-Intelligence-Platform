@@ -46,3 +46,48 @@ def search_faiss(query: str, top_k: int = 3):
             results.append(metadata_store[i])
             
     return results
+
+def generate_insights(raw_records: list):
+    if not raw_records:
+        return {
+            "summary": "I couldn't find any relevant data matching your query.",
+            "insights": [],
+            "raw_data": []
+        }
+    
+    parsed_records = []
+    num_keys = set()
+    
+    for row in raw_records:
+        parts = row.split(", ")
+        parsed = {}
+        for p in parts:
+            if ": " in p:
+                k, v = p.split(": ", 1)
+                try:
+                    parsed[k] = float(v)
+                    num_keys.add(k)
+                except ValueError:
+                    parsed[k] = v
+        parsed_records.append(parsed)
+    
+    insights = []
+    
+    for nk in num_keys:
+        vals = [r[nk] for r in parsed_records if nk in r]
+        if vals:
+            insights.append(f"Highest {nk}: {max(vals)}")
+            insights.append(f"Lowest {nk}: {min(vals)}")
+            avg = sum(vals) / len(vals)
+            insights.append(f"Average {nk}: {avg:.2f}")
+
+    # Deduplicate and limit
+    insights = list(dict.fromkeys(insights))[:6]
+    
+    summary = f"I analyzed {len(raw_records)} relevant records based on your question. Here are the key patterns found."
+
+    return {
+        "summary": summary,
+        "insights": insights,
+        "raw_data": parsed_records
+    }

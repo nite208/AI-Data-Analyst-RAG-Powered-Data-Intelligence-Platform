@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { Search, ArrowRight, Bot, User as UserIcon } from 'lucide-react';
+import { Search, ArrowRight, Bot, User as UserIcon, Lightbulb } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { queryDataset } from '../services/api';
+import AutoChart from '../components/AutoChart';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -20,14 +21,15 @@ export default function Dashboard() {
 
     try {
       const response = await queryDataset(userMessage.content);
-      const results = response.results;
       
-      let botContent = "I couldn't find any relevant information in your datasets. Please ensure your query relates to the uploaded contexts.";
-      if (results && results.length > 0) {
-        botContent = "Here are the most relevant records found:\n\n" + results.map(r => `• ${r}`).join('\n\n');
-      }
+      const botMessage = {
+        role: 'bot',
+        content: response.summary || "I couldn't find any relevant patterns.",
+        insights: response.insights || [],
+        rawData: response.raw_data || []
+      };
 
-      setMessages((prev) => [...prev, { role: 'bot', content: botContent }]);
+      setMessages((prev) => [...prev, botMessage]);
     } catch (err) {
       setMessages((prev) => [...prev, { role: 'bot', content: "An error occurred while analyzing the data. Make sure a dataset is fully uploaded and indexed." }]);
     } finally {
@@ -63,12 +65,32 @@ export default function Dashboard() {
                   </div>
                 )}
                 
-                <div className={`max-w-[75%] rounded-2xl px-5 py-3.5 text-sm shadow-xl ${
+                <div className={`max-w-[85%] rounded-2xl overflow-hidden shadow-xl ${
                   msg.role === 'user' 
                     ? 'bg-indigo-600 text-white' 
-                    : 'bg-slate-800/80 text-slate-200 border border-slate-700/50 whitespace-pre-wrap leading-relaxed'
+                    : 'bg-slate-800/80 border border-slate-700/50'
                 }`}>
-                  {msg.content}
+                  <div className={`px-5 py-3.5 text-sm ${msg.role === 'bot' ? 'text-slate-200' : ''}`}>
+                    {msg.content}
+                  </div>
+                  
+                  {/* AI Extra Rendering Blocks */}
+                  {msg.role === 'bot' && msg.insights && msg.insights.length > 0 && (
+                    <div className="px-5 pb-5 w-full flex flex-col gap-4 border-t border-slate-700/30 pt-4 mt-2">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 w-full">
+                        {msg.insights.map((insight, idy) => (
+                          <div key={idy} className="flex gap-2 items-start bg-slate-900/40 p-3 rounded-lg border border-slate-700/40">
+                             <Lightbulb size={16} className="text-amber-400 mt-0.5 shrink-0" />
+                             <span className="text-xs text-slate-300">{insight}</span>
+                          </div>
+                        ))}
+                      </div>
+                      
+                      {msg.rawData && msg.rawData.length > 0 && (
+                         <AutoChart data={msg.rawData} />
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 {msg.role === 'user' && (
@@ -104,7 +126,7 @@ export default function Dashboard() {
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="E.g., Which users are located in California?"
+              placeholder="E.g., What are the highest trends in our dataset?"
               className="w-full bg-slate-800/50 border border-slate-700 hover:border-slate-600 rounded-xl pl-12 pr-14 py-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all text-slate-100 placeholder-slate-500 shadow-inner"
               disabled={loading}
             />
